@@ -42,7 +42,15 @@ Only run a script under certain conditions like time of day, when it's raining o
 
 
 **Intervals**<br>
-Scripts can run in intervals like every second, every 5 seconds or every minute.
+Scripts can run in intervals like every second, every 5 seconds or every minute.<br>
+
+![aBackground2 (Custom)](https://github.com/MN-Creator/EasyScript-Mod-Menu/assets/68109830/af157064-3e2c-4848-8860-96201e7a822f)
+
+**Keybinds**<br>
+Run the script with a keyboard or controller.<br>
+
+![cKeybinds3](https://github.com/MN-Creator/EasyScript-Mod-Menu/assets/68109830/10bb5ffd-baf2-434a-99d9-6b10a235d053)
+
 
 ## Installation
 
