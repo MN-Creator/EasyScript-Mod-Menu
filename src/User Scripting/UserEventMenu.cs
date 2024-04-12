@@ -31,6 +31,15 @@ namespace EasyScript.UserScripting
             }
         }
 
+        public bool IsAnyEventActive()
+        {
+            foreach (GameEvent gameEvent in _allEvents)
+            {
+                if (EventCheckboxes[gameEvent].Checked) return true;
+            }
+            return false;
+        }
+
         private void OnCheckboxChanged(object sender, EventArgs e)
         {
             var checkbox = (NativeCheckboxItem)sender;

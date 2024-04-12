@@ -1,6 +1,8 @@
-﻿using GTA;
+﻿using EasyScript.Extensions;
+using GTA;
 using LemonUI.Menus;
 using LemonUI.Scaleform;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -32,10 +34,26 @@ namespace EasyScript.UserScripting
             CreateMenuForEveryCategory();
 
             _keybinds = new ScriptKeybindMenu(Pool, Menu, "Keybinds");
-            CreateSettingsMenu();
+            var settingsMenu = CreateSettingsMenu();
             var createAction = CreateItem("Create Action", CreateAction);
             CreateSeparator("Actions");
             CreateButtons();
+            var menuPanel = new PropertyPanel();
+            menuPanel.Add("Enabled", () => _enabledCheckbox.Checked.AsYesNo());
+            SubmenuItem.Panel = menuPanel;
+            var settingsPanel = CreateSettingsPanel();
+            settingsMenu.SubmenuItem.Panel = settingsPanel;
+        }
+
+        private PropertyPanel CreateSettingsPanel()
+        {
+            var propertyPanel = new PropertyPanel();
+            propertyPanel.Add("Randomizer Active", () => _randomizerCheckbox.Checked.AsYesNo());
+            propertyPanel.Add("Keybinds Active", () => (_keybinds.IsKeyboardKeyEnabled || _keybinds.IsGamepadButtonEnabled).AsYesNo());
+            propertyPanel.Add("Events Active", () => _eventMenu.IsAnyEventActive().AsYesNo());
+            propertyPanel.Add("Conditions Active", () => _conditions.DoesAnyConditionHaveValue().AsYesNo());
+            propertyPanel.Add("Running in Background", () => _backgroundRunner.IsActive.AsYesNo());
+            return propertyPanel;
         }
 
         private void OnEnabledChanged(bool value)
@@ -48,12 +66,13 @@ namespace EasyScript.UserScripting
             SubmenuItem.Colors = MenuColors.RedAltTitle;
         }
 
-        private void CreateSettingsMenu()
+        private Submenu CreateSettingsMenu()
         {
             Submenu settingsMenu = new Submenu(Pool, Menu, "Settings");
             _eventMenu = new UserEventMenu(Pool, settingsMenu.Menu, "Events", this);
             _backgroundRunner = new BackgroundRunner(Pool, settingsMenu.Menu, "Run in Background", this);
             _conditions = new ScriptConditions(Pool, settingsMenu.Menu, "Conditions");
+            return settingsMenu;
         }
 
         private void CreateButtons()
@@ -239,9 +258,9 @@ namespace EasyScript.UserScripting
         public override void OnKeyUp(object sender, KeyEventArgs e)
         {
             base.OnKeyUp(sender, e);
-            if (_keybinds.IsKeybindReleased(e))
+            if (_enabledCheckbox.Checked && _keybinds.IsKeybindReleased(e))
             {
-                Run();
+                ForceRun();
             }
         }
 
@@ -306,7 +325,7 @@ namespace EasyScript.UserScripting
 
         public void Update()
         {
-            if (_keybinds.IsGamepadButtonReleased())
+            if (_enabledCheckbox.Checked && _keybinds.IsGamepadButtonReleased())
             {
                 ForceRun();
             }

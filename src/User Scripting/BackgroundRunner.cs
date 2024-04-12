@@ -7,6 +7,7 @@ namespace EasyScript.UserScripting
 {
     internal class BackgroundRunner : Submenu, IUpdate
     {
+        public bool IsActive => _updateTimer.IsActive;
         private readonly UserScript _userScript;
         private readonly Timer _updateTimer;
         private static readonly float[] _intervals = { 0f, 0.5f, 1f, 2f, 5f, 10f, 30f, 60f };

@@ -31,10 +31,10 @@ namespace EasyScript.UserScripting
             _enableKeybindCheckbox = CreateCheckbox("Enable Key");
             _enableKeybindCheckbox.Checked = IsKeyboardKeyEnabled;
             CreateSeparator("Gamepad");
-            var controlList = CreateList("Gamepad Control", OnGamepadControlChanged,
+            var controlList = CreateList("Gamepad Button", OnGamepadControlChanged,
                 GeneralUtils.ConvertToArray<GTA.Control>());
             controlList.SelectedItem = GTA.Control.Reload;
-            GamepadControlCheckbox = CreateCheckbox("Enable Gamepad Shortcut", OnGamepadControlEnabled);
+            GamepadControlCheckbox = CreateCheckbox("Enable Gamepad Button", OnGamepadControlEnabled);
         }
 
         private void OnGamepadControlEnabled(object sender, EventArgs e)
