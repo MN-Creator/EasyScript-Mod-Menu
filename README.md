@@ -54,7 +54,7 @@ Run the script when pressing a button on a keyboard or controller.<br>
 **Randomizer**<br>
 Selects a random action when running the script.<br>
 
-![randomizer2 (Custom) (1)](https://github.com/MN-Creator/EasyScript-Mod-Menu/assets/68109830/431d2c9e-c437-400e-ba72-2f1154192243)
+![aRandomizer2 (Custom)](https://github.com/MN-Creator/EasyScript-Mod-Menu/assets/68109830/463fff20-ce14-4b9e-bb30-798c398114ff)
 
 ## Installation
 
