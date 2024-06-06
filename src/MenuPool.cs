@@ -89,6 +89,11 @@ namespace EasyScript
                 MenuOpened?.Invoke(this, EventArgs.Empty);
                 return;
             }
+            CloseMenu();
+        }
+
+        public void CloseMenu()
+        {
             Pool.HideAll();
             MenuClosed?.Invoke(this, EventArgs.Empty);
             _isMenuVisible = false;

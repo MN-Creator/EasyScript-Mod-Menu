@@ -22,10 +22,12 @@ namespace EasyScript.UserScripting
         private readonly string _enableDesc = "Enable keybinds, events and running in the background.";
         private ScriptConditions _conditions;
         private BackgroundRunner _backgroundRunner;
+        private NativeCheckboxItem _randomizerCheckbox;
+        private readonly Random _random = new Random();
 
         public UserScript(MenuPool pool, NativeMenu parent, string title) : base(pool, parent, title)
         {
-            Menu.MaxItems = 20;
+            Menu.MaxItems = 18;
             var runScriptItem = CreateItem("Run Script", ForceRun);
             runScriptItem.Colors = MenuColors.FranklinTitle;
             _enabledCheckbox = CreateCheckbox("Enabled", OnEnabledChanged);
@@ -34,20 +36,18 @@ namespace EasyScript.UserScripting
             CreateMenuForEveryCategory();
 
             _keybinds = new ScriptKeybindMenu(Pool, Menu, "Keybinds");
-            var settingsMenu = CreateSettingsMenu();
+            CreateSettingsMenu();
             var createAction = CreateItem("Create Action", CreateAction);
             CreateSeparator("Actions");
             CreateButtons();
-            var menuPanel = new PropertyPanel();
-            menuPanel.Add("Enabled", () => _enabledCheckbox.Checked.AsYesNo());
+            var menuPanel = CreateMenuPanel();
             SubmenuItem.Panel = menuPanel;
-            var settingsPanel = CreateSettingsPanel();
-            settingsMenu.SubmenuItem.Panel = settingsPanel;
         }
 
-        private PropertyPanel CreateSettingsPanel()
+        private PropertyPanel CreateMenuPanel()
         {
             var propertyPanel = new PropertyPanel();
+            propertyPanel.Add("Enabled", () => _enabledCheckbox.Checked.AsYesNo());
             propertyPanel.Add("Randomizer Active", () => _randomizerCheckbox.Checked.AsYesNo());
             propertyPanel.Add("Keybinds Active", () => (_keybinds.IsKeyboardKeyEnabled || _keybinds.IsGamepadButtonEnabled).AsYesNo());
             propertyPanel.Add("Events Active", () => _eventMenu.IsAnyEventActive().AsYesNo());
@@ -69,6 +69,8 @@ namespace EasyScript.UserScripting
         private Submenu CreateSettingsMenu()
         {
             Submenu settingsMenu = new Submenu(Pool, Menu, "Settings");
+            _randomizerCheckbox = settingsMenu.CreateCheckbox("Randomizer");
+            _randomizerCheckbox.Description = "Picks a random action when running the script.";
             _eventMenu = new UserEventMenu(Pool, settingsMenu.Menu, "Events", this);
             _backgroundRunner = new BackgroundRunner(Pool, settingsMenu.Menu, "Run in Background", this);
             _conditions = new ScriptConditions(Pool, settingsMenu.Menu, "Conditions");
@@ -139,14 +141,14 @@ namespace EasyScript.UserScripting
         private void AddActionFromCategory(string actionName)
         {
             LoadAction(actionName);
-            GTA.UI.Screen.ShowSubtitle($"Added {actionName}");
+            GTA.UI.Screen.ShowSubtitle($"Added ~y~{actionName}");
         }
 
         private void LoadActionFromGameInput()
         {
             string input = Game.GetUserInput();
             if (!UserActions.NameToAction.Keys.Contains(input)) return;
-            LoadAction(input);
+            AddActionFromCategory(input);
         }
 
         /// <summary>
@@ -154,16 +156,16 @@ namespace EasyScript.UserScripting
         /// </summary>
         public void Run()
         {
-            if (!_conditions.AreConditionsTrue()) return;
+            if (!_enabledCheckbox.Checked || !_conditions.AreConditionsTrue()) return;
+            if (_randomizerCheckbox.Checked)
+            {
+                int index = _random.Next(ActionList.Count);
+                RunAction(index);
+                return;
+            }
             for (int i = 0; i < ActionList.Count; i++)
             {
-                string command = ActionList[i].SelectedItem;
-                UserAction userAction = UserActions.NameToAction[command];
-                if (userAction is IActionParameter parameterizedAction)
-                {
-                    parameterizedAction.Parameter = ActionList[i].Title;
-                }
-                userAction.Execute();
+                RunAction(i);
             }
         }
 
@@ -172,16 +174,27 @@ namespace EasyScript.UserScripting
         /// </summary>
         public void ForceRun()
         {
+            if (_randomizerCheckbox.Checked)
+            {
+                int index = _random.Next(ActionList.Count);
+                RunAction(index);
+                return;
+            }
             for (int i = 0; i < ActionList.Count; i++)
             {
-                string command = ActionList[i].SelectedItem;
-                UserAction userAction = UserActions.NameToAction[command];
-                if (userAction is IActionParameter parameterizedAction)
-                {
-                    parameterizedAction.Parameter = ActionList[i].Title;
-                }
-                userAction.Execute();
+                RunAction(i);
             }
+        }
+
+        private void RunAction(int index)
+        {
+            if (index >= ActionList.Count) return;
+            UserAction userAction = UserActions.NameToAction[ActionList[index].SelectedItem];
+            if (userAction is IActionParameter parameterizedAction)
+            {
+                parameterizedAction.Parameter = ActionList[index].Title;
+            }
+            userAction.Execute();
         }
 
         private void CreateAction()
@@ -192,29 +205,8 @@ namespace EasyScript.UserScripting
             listItem.Colors.AltTitleNormal = MenuColors.MichaelColor;
             listItem.UpdateColors();
 
-            listItem.Activated += (a, o) =>
-            {
-                GTA.UI.Screen.ShowSubtitle("Enter a parameter for this action.");
-                if (UserActions.NameToAction[listItem.SelectedItem] is IActionParameter)
-                {
-                    string parameter = Game.GetUserInput();
-                    parameter = LimitTextLength(parameter);
-                }
-                else
-                {
-                    RunSimpleAction(listItem.SelectedItem);
-                }
-            };
+            listItem.Activated += (a, o) => OnListItemActivated(listItem);
             ActionList.Add(listItem);
-        }
-
-        private string LimitTextLength(string parameter)
-        {
-            if (parameter.Length > 15)
-            {
-                return parameter.Substring(0, 15);
-            }
-            return parameter;
         }
 
         private void OnListItemActivated(NativeListItem<string> listItem)
@@ -249,7 +241,7 @@ namespace EasyScript.UserScripting
             listItem.SelectedItem = command;
             if (UserActions.NameToAction[command] is IActionParameter actionParameter)
             {
-                listItem.Title = LimitTextLength(actionParameter.Parameter);
+                listItem.Title = actionParameter.Parameter;
             }
             listItem.Description = UserActions.NameToAction[command].Description;
             ActionList.Add(listItem);
@@ -269,6 +261,7 @@ namespace EasyScript.UserScripting
             var scriptNode = new XElement("Script");
             scriptNode.Add(new XAttribute("name", Title));
             scriptNode.Add(new XAttribute("enabled", Enabled));
+            scriptNode.Add(new XAttribute("randomize", _randomizerCheckbox.Checked));
 
             var actionParentNode = new XElement("Actions");
             scriptNode.Add(actionParentNode);
@@ -296,6 +289,7 @@ namespace EasyScript.UserScripting
             Title = XMLUtils.GetText(scriptNode.Attribute("name"), "Script");
             SubmenuItem.Title = Title;
             _enabledCheckbox.Checked = XMLUtils.GetBool(scriptNode.Attribute("enabled"), true);
+            _randomizerCheckbox.Checked = XMLUtils.GetBool(scriptNode.Attribute("randomize"), false);
 
             var actionNodes = scriptNode.Element("Actions");
             foreach (XElement actionNode in actionNodes.Elements())

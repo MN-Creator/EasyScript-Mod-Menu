@@ -39,7 +39,7 @@ namespace EasyScript.Menus
         {
             var _settingsMenu = new Submenu(_menuPool, this, "Settings");
             var allKeys = GeneralUtils.ConvertToArray<Keys>();
-            _openMenuKeyList = _settingsMenu.CreateList("open_menu", OnOpenMenuKeyChanged, allKeys);
+            _openMenuKeyList = _settingsMenu.CreateList("Open Menu", OnOpenMenuKeyChanged, allKeys);
             _openMenuKeyList.SelectedItem = _menuPool.ToggleMenuKey;
             _settingsMenu.CreateItem("Reset Open Menu Key", (a, o) => _openMenuKeyList.SelectedItem = Keys.F10);
             var loggingCheckbox = _settingsMenu.CreateCheckbox("Logging", (o) => Logger.IsLogging = o);

@@ -26,7 +26,15 @@ namespace EasyScript.UserScripting
         {
             foreach (GameEvent gameEvent in _allEvents)
             {
-                NativeCheckboxItem checkbox = CreateCheckbox(gameEvent.ToString(), OnCheckboxChanged);
+                string eventName = gameEvent.ToString();
+                string checkboxTitle = GeneralUtils.AddSpaceForEachCapitalLetter(eventName);
+                NativeCheckboxItem checkbox = CreateCheckbox(checkboxTitle, (value) =>
+                {
+                    if (value)
+                        Pool.GameEvents.Subscribe(gameEvent, OnEvent);
+                    else
+                        Pool.GameEvents.Unsubscribe(gameEvent, OnEvent);
+                });
                 EventCheckboxes.Add(gameEvent, checkbox);
             }
         }
@@ -38,24 +46,6 @@ namespace EasyScript.UserScripting
                 if (EventCheckboxes[gameEvent].Checked) return true;
             }
             return false;
-        }
-
-        private void OnCheckboxChanged(object sender, EventArgs e)
-        {
-            var checkbox = (NativeCheckboxItem)sender;
-            string eventName = checkbox.Title;
-            if (Enum.TryParse(eventName, out GameEvent gameEvent))
-            {
-                if (_allEvents.Contains(gameEvent))
-                {
-                    if (checkbox.Checked)
-                    {
-                        Pool.GameEvents.Subscribe(gameEvent, OnEvent);
-                        return;
-                    }
-                    Pool.GameEvents.Unsubscribe(gameEvent, OnEvent);
-                }
-            }
         }
 
         private void OnEvent(object sender, EventArgs e)

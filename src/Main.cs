@@ -16,11 +16,6 @@ namespace EasyScript
         public Main()
         {
             StartLogging();
-            var loadingWatch = new Stopwatch();
-            loadingWatch.Start();
-            loadingWatch.Stop();
-            Logger.Log($"Menu loaded in {loadingWatch.ElapsedMilliseconds} ms");
-            Logger.Log("Memory Usage: " + GC.GetTotalMemory(true) / 1024 + " KB");
             _displayWelcomeMessage = SettingsManager.GetValue("Settings", "display_welcome_message", true);
             _welcomeMessageTimer = new Timer(1, DisplayWelcomeMessage);
 
@@ -72,7 +67,7 @@ namespace EasyScript
 
         public static void CloseMenu()
         {
-            _mainMenu.Visible = false;
+            _menuPool.CloseMenu();
         }
     }
 }

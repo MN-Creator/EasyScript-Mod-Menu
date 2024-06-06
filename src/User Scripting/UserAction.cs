@@ -98,7 +98,7 @@ namespace EasyScript.UserScripting
             get => _parameter;
             set
             {
-                if (value != _parameter && IsValid(_parameter))
+                if (value != _parameter && IsValid(value))
                 {
                     _parameter = value;
                     UpdateNumber();

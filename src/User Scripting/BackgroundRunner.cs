@@ -18,9 +18,10 @@ namespace EasyScript.UserScripting
         public BackgroundRunner(MenuPool pool, NativeMenu parent, string title, UserScript userScript) : base(pool, parent, title)
         {
             SubmenuItem.Description = "Run the script in the background at a set interval.";
-            _enabledCheckbox = CreateCheckbox("Run in Background", (a, o) => _updateTimer.ToggleTimerActive());
+            _enabledCheckbox = CreateCheckbox("Enabled", (a, o) => _updateTimer.ToggleTimerActive());
             _ignoreConditionsCheckbox = CreateCheckbox("Ignore Conditions");
             _intervalListItem = CreateList("Interval (seconds)", ChangeUpdateInterval, 1f, _intervals);
+            _intervalListItem.Description = "Set the interval at which the script will run (0 means every frame).";
             _userScript = userScript;
             _updateTimer = new Timer(1f, isLooping: true);
             _updateTimer.Stop();

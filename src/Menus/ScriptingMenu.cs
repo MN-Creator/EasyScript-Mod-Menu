@@ -4,6 +4,7 @@ using LemonUI.Menus;
 using LemonUI.Scaleform;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -21,19 +22,33 @@ namespace EasyScript
         private readonly int _startItemCount;
         private readonly GTA.Control _addScriptButton = GTA.Control.MeleeAttackHeavy;
         private readonly GTA.Control _removeScriptButton = GTA.Control.NextCamera;
+        private bool _wasMinimapVisible;
 
         public ScriptingMenu(MenuPool pool, NativeMenu parent, string title) : base(pool, parent, title)
         {
-            Menu.MaxItems = 15;
+            Menu.MaxItems = 17;
             var create = CreateItem("Create Script", CreateScript);
             var revertItem = CreateItem("Revert All Actions", UserActions.ResetEffects);
             revertItem.Description = "Revert all actions on the player and world.";
-            CreateItem("Save Scripts", SaveScriptsXML);
             CreateSeparator("Scripts");
             _startItemCount = Menu.Items.Count;
             LoadScriptsXML();
             CreateButtons();
+            Menu.Opening += OnOpen;
+            Menu.Closing += OnClose;
             Menu.Closed += (sender, e) => SaveScriptsXML();
+        }
+
+        private void OnOpen(object sender, CancelEventArgs e)
+        {
+            if (e.Cancel) return;
+            _wasMinimapVisible = GTA.UI.Hud.IsRadarVisible;
+            GTA.UI.Hud.IsRadarVisible = false;
+        }
+
+        private void OnClose(object sender, CancelEventArgs e)
+        {
+            GTA.UI.Hud.IsRadarVisible = _wasMinimapVisible;
         }
 
         private void CreateButtons()
