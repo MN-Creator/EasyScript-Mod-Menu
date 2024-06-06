@@ -57,18 +57,14 @@
     <Compile Include="src\Extensions\EnumerableExtensions.cs" />
     <Compile Include="src\Logger.cs" />
     <Compile Include="src\MenuColors.cs" />
-    <Compile Include="src\MenuIcons.cs" />
     <Compile Include="src\Menus\BodyguardMenu.cs" />
     <Compile Include="src\GameEventTracker.cs" />
     <Compile Include="src\IUpdate.cs" />
     <Compile Include="src\Main.cs" />
     <Compile Include="src\MenuPool.cs" />
-    <Compile Include="src\Menus\MainMenuDebug.cs" />
     <Compile Include="src\Menus\MainMenu.cs" />
     <Compile Include="src\Menus\ScriptingMenu.cs" />
-    <Compile Include="src\Menus\SettingsMenu.cs" />
     <Compile Include="src\Menus\SpeedometerMenu.cs" />
-    <Compile Include="src\Menus\DebugMenu.cs" />
     <Compile Include="src\Extensions\NativeMenuExtensions.cs" />
     <Compile Include="src\Menus\VehicleModMenu.cs" />
     <Compile Include="src\Submenu.cs" />
@@ -108,7 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
-    <Content Include="Links.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
