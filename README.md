@@ -49,7 +49,8 @@ Scripts can run in intervals like every second, every 5 seconds or every minute.
 **Keybinds**<br>
 Run the script when pressing a button on a keyboard or controller.<br>
 
-![cKeybinds3](https://github.com/MN-Creator/EasyScript-Mod-Menu/assets/68109830/10bb5ffd-baf2-434a-99d9-6b10a235d053)
+![cKeybinds4](https://github.com/MN-Creator/EasyScript-Mod-Menu/assets/68109830/5c185e94-4c77-40d5-b7e1-3c02221aad9f)
+
 
 **Randomizer**<br>
 Selects a random action when running the script.<br>
