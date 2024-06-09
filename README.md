@@ -62,8 +62,8 @@ Selects a random action when running the script.<br>
 1. Install everything from the requirements.
 2. Place ScriptHookV.dll and ScriptHookVDotNetv3.dll in your GTA V directory.
 3. Drag LemonUI.SHVDN3.dll into your **scripts** folder (create the folder if it's missing).
-4. Download EasyScript.zip from the release page.
-5. Move the contents of the zip file into your **scripts** folder.
+4. Download [EasyScript.zip](../../releases/latest) from the release page.
+6. Move the contents of the zip file into your **scripts** folder.
 
 ## Requirements
 
