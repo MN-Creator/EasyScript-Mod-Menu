@@ -25,7 +25,7 @@ Create your own list of actions to run when you press a button, when a mission s
 
 **Example Scripts**
 - Remove traffic
-- [Only show minimap when driving](Examples/ShowMinimapWhenDriving)
+- [Only show minimap when driving](Examples/MinimapWhenDriving)
 - Control car indicators
 - [Remove weapons when player respawns](Examples/NoWeaponsOnSpawn)
 
