@@ -40,6 +40,7 @@ namespace EasyScript.UserScripting
             new NumberAction("Set Armor", (n) => PlayerPed.Armor = n, 200),
             new SimpleAction("Refill Special Ability", Game.Player.RefillSpecialAbility),
             new SimpleAction("Deplete Special Ability", Game.Player.DepleteSpecialAbility),
+            new SimpleAction("Toggle Night Vision", () => Game.IsNightVisionActive = !Game.IsNightVisionActive),
             new SimpleAction("Max Wanted Level", () => Game.Player.WantedLevel = 5),
             new SimpleAction("Increase Wanted Level", () => Game.Player.WantedLevel++),
             new SimpleAction("Decrease Wanted Level", () => Game.Player.WantedLevel--),
@@ -150,6 +151,10 @@ namespace EasyScript.UserScripting
         public static UserAction[] MiscActions =
         {
             new EnumAction<Control>("Press Button", _pressButtonDesc, (c) => Game.SetControlValueNormalized(c, 1f)),
+            new NumberAction("Set Time", (n) => World.CurrentTimeOfDay = new System.TimeSpan(n, 0, 0), 23),
+            new EnumAction<Weather>("Set Weather", (w) => World.Weather = w, Weather.Clear),
+            new SimpleAction("Toggle Slow Motion", () => Game.TimeScale = Game.TimeScale == 1.0f ? 0.5f : 1.0f),
+            new FloatAction("Set Time Scale", (n) => Game.TimeScale = n, 1.0f),
             new SimpleAction("Remove Waypoint", World.RemoveWaypoint),
             new SimpleAction("Enable All Lights", () => World.Blackout = false),
             new SimpleAction("Disable All Lights", () => World.Blackout = true),

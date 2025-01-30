@@ -163,6 +163,78 @@ namespace EasyScript.UserScripting
         }
     }
 
+    public class FloatAction : UserAction, IActionParameter
+    {
+        public string Parameter
+        {
+            get => _parameter;
+            set
+            {
+                if (value != _parameter && IsValid(value))
+                {
+                    _parameter = value;
+                    UpdateFloat();
+                }
+            }
+        }
+        private float _float;
+        private string _parameter;
+        private readonly Action<float> _action;
+        private readonly float _min = 0f;
+        private readonly float _max = 100f;
+
+        public FloatAction(string name, Action<float> action, float min = 0f, float max = 100f) : base(name)
+        {
+            _action = action;
+            _parameter = _float.ToString();
+            _min = min;
+            _max = max;
+        }
+
+        public FloatAction(string name, Action<float> action, float max) : base(name)
+        {
+            _action = action;
+            _parameter = _float.ToString();
+            _max = max;
+        }
+
+        public FloatAction(string name, string description, Action<float> action, float min = 0f, float max = 100f) : base(name, description)
+        {
+            _action = action;
+            _parameter = _float.ToString();
+            _min = min;
+            _max = max;
+        }
+
+        private void UpdateFloat()
+        {
+            if (float.TryParse(_parameter, out float number))
+            {
+                if (number < _min || number > _max)
+                {
+                    _float = Math.Min(_max, Math.Max(_min, number));
+                    _parameter = _float.ToString();
+                    return;
+                }
+                _float = number;
+            }
+        }
+
+        public override void Execute()
+        {
+            _action?.Invoke(_float);
+        }
+
+        public bool IsValid(string value)
+        {
+            if (float.TryParse(value, out float _))
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
     public class VehicleAction : UserAction, IActionParameter
     {
         public string Parameter
