@@ -142,19 +142,22 @@ namespace EasyScript
         public void Update()
         {
             if (!Menu.Visible) return;
-            if (Game.IsControlJustReleased(_addScriptButton))
+            if (Game.LastInputMethod == InputMethod.MouseAndKeyboard)
             {
-                CreateScript(null, null);
-            }
-            if (Game.IsControlJustReleased(_removeScriptButton))
-            {
-                if (_scripts.Count == 0 || Menu.SelectedIndex <= _startItemCount) return;
-                int currentIndex = Menu.SelectedIndex;
-                int index = currentIndex - _startItemCount;
-                Menu.Remove(_items[index]);
-                _scripts.RemoveAt(index);
-                _items.RemoveAt(index);
-                Menu.SelectedIndex = currentIndex - 1;
+                if (Game.IsControlJustReleased(_addScriptButton))
+                {
+                    CreateScript(null, null);
+                }
+                if (Game.IsControlJustReleased(_removeScriptButton))
+                {
+                    if (_scripts.Count == 0 || Menu.SelectedIndex <= _startItemCount) return;
+                    int currentIndex = Menu.SelectedIndex;
+                    int index = currentIndex - _startItemCount;
+                    Menu.Remove(_items[index]);
+                    _scripts.RemoveAt(index);
+                    _items.RemoveAt(index);
+                    Menu.SelectedIndex = currentIndex - 1;
+                }
             }
         }
     }
