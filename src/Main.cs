@@ -1,7 +1,6 @@
 ﻿using EasyScript.Menus;
 using GTA;
 using System;
-using System.Diagnostics;
 
 namespace EasyScript
 {

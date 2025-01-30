@@ -87,12 +87,11 @@ namespace EasyScript.UserScripting
 
         private void OnListItemChanged(object sender, ItemChangedEventArgs<string> e)
         {
-            string action = e.Object;
-            if (UserActions.NameToAction.Keys.Contains(action))
+            if (UserActions.NameToAction.TryGetValue(e.Object, out var action))
             {
                 NativeListItem<string> listItem = (NativeListItem<string>)sender;
-                listItem.Description = UserActions.NameToAction[action].Description;
-                if (UserActions.NameToAction[action] is IActionParameter parameterizedAction)
+                listItem.Description = action.Description;
+                if (action is IActionParameter parameterizedAction)
                 {
                     if (parameterizedAction.Parameter.Length > 15)
                     {
@@ -106,11 +105,11 @@ namespace EasyScript.UserScripting
             }
         }
 
-        private void RunSimpleAction(string action)
+        private void RunSimpleAction(string actionName)
         {
-            if (UserActions.NameToAction.Keys.Contains(action))
+            if (UserActions.NameToAction.TryGetValue(actionName, out var action))
             {
-                UserActions.NameToAction[action].Execute();
+                action.Execute();
             }
         }
 
@@ -189,12 +188,14 @@ namespace EasyScript.UserScripting
         private void RunAction(int index)
         {
             if (index >= ActionList.Count) return;
-            UserAction userAction = UserActions.NameToAction[ActionList[index].SelectedItem];
-            if (userAction is IActionParameter parameterizedAction)
+            if (UserActions.NameToAction.TryGetValue(ActionList[index].SelectedItem, out var userAction))
             {
-                parameterizedAction.Parameter = ActionList[index].Title;
+                if (userAction is IActionParameter parameterizedAction)
+                {
+                    parameterizedAction.Parameter = ActionList[index].Title;
+                }
+                userAction.Execute();
             }
-            userAction.Execute();
         }
 
         private void CreateAction()
@@ -227,23 +228,25 @@ namespace EasyScript.UserScripting
             }
         }
 
-        public void LoadAction(string command, string parameter = "")
+        // Create a new list item from an action name.
+        public void LoadAction(string actionName, string parameter = "")
         {
             NativeListItem<string> listItem = CreateList(parameter, OnListItemChanged, UserActions.ScriptActionNames);
-            listItem.Activated += (a, o) => OnListItemActivated(listItem);
-            if (!UserActions.NameToAction.Keys.Contains(command))
+            listItem.Activated += (a, o) => OnListItemActivated(listItem); 
+            if (!UserActions.NameToAction.TryGetValue(actionName, out var userAction))
             {
+                // If the action is not found, set the first action as default.
                 listItem.SelectedItem = UserActions.AllActions[0].Name;
                 ActionList.Add(listItem);
-                GTA.UI.Screen.ShowSubtitle($"{Main.DisplayName}: Did not find action '{command}'");
+                GTA.UI.Screen.ShowSubtitle($"{Main.DisplayName}: Did not find action '{actionName}'");
                 return;
             }
-            listItem.SelectedItem = command;
-            if (UserActions.NameToAction[command] is IActionParameter actionParameter)
+            listItem.SelectedItem = actionName;
+            if (userAction is IActionParameter actionParameter)
             {
                 listItem.Title = actionParameter.Parameter;
             }
-            listItem.Description = UserActions.NameToAction[command].Description;
+            listItem.Description = UserActions.NameToAction[actionName].Description;
             ActionList.Add(listItem);
         }
 
